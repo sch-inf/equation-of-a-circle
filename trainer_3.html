@@ -99,6 +99,12 @@ function drawGrid(){
   ctx.strokeStyle='#111';
   ctx.beginPath();ctx.moveTo(0,canvas.height/2);ctx.lineTo(canvas.width,canvas.height/2);ctx.stroke();
   ctx.beginPath();ctx.moveTo(canvas.width/2,0);ctx.lineTo(canvas.width/2,canvas.height);ctx.stroke();
+
+    // підписи осей
+  ctx.font='bold 14px system-ui';
+  ctx.fillStyle='#111';
+  ctx.fillText('x', canvas.width-18, canvas.height/2-6);
+  ctx.fillText('y', canvas.width/2+6, 16);
 }
 
 function drawCircle(x,y,r,color='#4aa'){
