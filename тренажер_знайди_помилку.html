@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Тренажер: Знайди помилку в рівнянні кола</title>
+<style>
+:root{
+  --bg:#f7f9fb;
+  --card:#ffffff;
+  --accent:#4aa;
+  --accent-soft:#dff3f3;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --bad:#dc2626;
+  --good:#16a34a;
+}
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text)}
+.container{max-width:900px;margin:auto;padding:16px}
+.card {
+    position: relative;
+    overflow: hidden;background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+.header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.stats{display:flex;gap:16px;font-weight:500}
+.stats span{color:var(--muted)}
+.canvas-wrap{text-align:center}
+canvas{background:#fff;border-radius:12px;border:1px solid #e5e7eb;max-width:100%}
+.equation{font-size:20px;font-weight:600;text-align:center;margin:12px 0}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+button{padding:12px;border-radius:12px;border:2px solid var(--accent);background:#fff;font-size:16px;font-weight:600;cursor:pointer}
+button:hover{background:var(--accent-soft)}
+button.correct{border-color:var(--good);color:var(--good)}
+button.wrong{border-color:var(--bad);color:var(--bad)}
+.message{text-align:center;font-weight:600;margin-top:12px}
+  div#msg {
+    position: absolute;
+    background: white;
+    /* margin: auto; */
+    height: 100%;
+    width: 100%;
+    margin: -15px;
+    /* text-align: center; */
+    padding: 27px;
+}
+  div#msg.hidden{
+      display:none;
+  }
+@media(max-width:500px){.stats{flex-direction:column;gap:4px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card header">
+    <h2>🧠 Знайди помилку</h2>
+    <div class="stats">
+      <div>Спроб: <span id="tries">0</span></div>
+      <div>✅ Правильно: <span id="score">0</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="canvas-wrap">
+      <canvas id="plane" width="400" height="400"></canvas>
+    </div>
+    <div class="equation" id="equation"></div>
+  </div>
+
+  <div class="card">
+    
+    <div id="msg" class="message hidden"></div>
+    <div class="options">
+      <button data-answer="center">❌ Помилка в центрі</button>
+      <button data-answer="radius">❌ Помилка в радіусі</button>
+      <button data-answer="sign">❌ Помилка у знаках</button>
+      <button data-answer="ok">✅ Все правильно</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('plane');
+const ctx = canvas.getContext('2d');
+const size = 9;
+const step = canvas.width/(size*2);
+
+let tries=0, score=0;
+let current={};
+
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+
+function drawGrid(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='#e5e7eb';
+  for(let i=-size;i<=size;i++){
+    ctx.beginPath();ctx.moveTo(0,canvas.height/2+i*step);ctx.lineTo(canvas.width,canvas.height/2+i*step);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(canvas.width/2+i*step,0);ctx.lineTo(canvas.width/2+i*step,canvas.height);ctx.stroke();
+  }
+  ctx.strokeStyle='#111';
+  ctx.beginPath();ctx.moveTo(0,canvas.height/2);ctx.lineTo(canvas.width,canvas.height/2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(canvas.width/2,0);ctx.lineTo(canvas.width/2,canvas.height);ctx.stroke();
+}
+
+function drawCircle(x,y,r,color='#4aa'){
+  ctx.setLineDash([6,6]);
+  ctx.strokeStyle=color;ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(canvas.width/2+x*step,canvas.height/2-y*step,r*step,0,Math.PI*2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#dc2626';
+  ctx.beginPath();ctx.arc(canvas.width/2+x*step,canvas.height/2-y*step,4,0,Math.PI*2);ctx.fill();
+}
+
+function errorText(type){
+  switch(type){
+    case 'center': return ' У цьому завданні помилка в координатах центра кола.';
+    case 'radius': return ' У цьому завданні помилка в радіусі (r²).' ;
+    case 'sign': return ' У цьому завданні помилка у знаках в дужках.';
+    case 'ok': return ' У цьому завданні рівняння записане правильно.';
+  }
+}
+
+function newTask(){
+  drawGrid();
+  const x=rand(-5,5), y=rand(-5,5), r=rand(1,5);
+  drawCircle(x,y,r);
+
+  const errorType=['center','radius','sign','ok'][rand(0,3)];
+  current={x,y,r,errorType};
+
+  let ex=x, ey=y, er=r;
+  if(errorType==='center') ex+=rand(1,2);
+  if(errorType==='radius') er+=1;
+  if(errorType==='sign') ex*=-1;
+
+  const sx=ex>=0?`-${ex}`:`+${Math.abs(ex)}`;
+  const sy=ey>=0?`-${ey}`:`+${Math.abs(ey)}`;
+  document.getElementById('equation').textContent=`(x ${sx})² + (y ${sy})² = ${er*er}`;
+  document.getElementById('msg').textContent='';
+}
+
+function check(btn){
+  document.getElementById('msg').classList.remove("hidden");
+  tries++;document.getElementById('tries').textContent=tries;
+  const ok = btn.dataset.answer===current.errorType;
+  btn.classList.add(ok?'correct':'wrong');
+  if(ok){score++;document.getElementById('score').textContent=score;}
+
+  document.getElementById('msg').textContent = ok
+    ? '✅ Вірно! ' + errorText(current.errorType)
+    : '❌ Неправильно. ' + errorText(current.errorType);
+
+  setTimeout(()=>{
+    document.querySelectorAll('button').forEach(b=>b.className='');
+    newTask();
+    document.getElementById('msg').classList.add("hidden");
+  },2800);
+}
+
+document.querySelectorAll('button').forEach(b=>b.onclick=()=>check(b));
+newTask();
+</script>
+</body>
+</html>
