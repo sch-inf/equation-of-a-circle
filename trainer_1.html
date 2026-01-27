@@ -70,7 +70,8 @@ const ctx = canvas.getContext('2d');
 const size = 9;
 const step = canvas.width / (size*2);
 
-let current = {};
+let current = {};  
+let answered = 0;
 let score = 0;
 let startTime = Date.now();
 
@@ -149,7 +150,8 @@ function check(){
   drawGrid();
   drawTarget();
   drawUser(x,y,r);
-
+  answered++;
+  document.getElementById('answered').textContent = answered;
   if(x===current.x && y===current.y && r===current.r){
     score++;
     document.getElementById('score').textContent=score;
