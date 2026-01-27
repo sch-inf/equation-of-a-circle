@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Коло на координатній площині — тренажери</title>
+<style>
+:root{
+  --bg:#f7f9fb;
+  --card:#ffffff;
+  --accent:#4aa;
+  --accent-soft:#dff3f3;
+  --text:#1f2937;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text)}
+.container{max-width:900px;margin:auto;padding:16px; min-height: 100vh;}
+.header{margin-bottom:24px}
+.header h1{margin:0 0 8px 0}
+.header p{margin:0;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:12px}
+.card h2{margin:0;font-size:20px}
+.card p{margin:0;color:var(--muted);flex-grow:1}
+.card a{align-self:flex-start;text-decoration:none}
+.button{display:inline-block;padding:10px 16px;border-radius:12px;background:var(--accent);color:#fff;font-weight:600;transition:transform .15s ease, box-shadow .15s ease}
+.button:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.12)}
+.footer{margin-top:32px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🟢 Коло на координатній площині</h1>
+    <p>Навчальні генератори та тренажери для роботи з рівнянням кола</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>🎲 Генератор випадкових кіл</h2>
+      <p>Випадкове коло на координатній площині з можливістю переглянути рівняння та параметри.</p>
+      <a href="generator.html" class="button">Відкрити</a>
+    </div>
+
+    <div class="card">
+      <h2>✏️ Встанови параметри кола</h2>
+      <p>За зображенням кола визнач координати центра та радіус. Ведеться підрахунок спроб і часу.</p>
+      <a href="trainer_1.html" class="button">Почати тренування</a>
+    </div>
+
+    <div class="card">
+      <h2>🧩 Віднови рівняння кола</h2>
+      <p>За зображенням кола віднови формулу рівняння, вводячи знаки, координати та r².</p>
+      <a href="trainer_2.html" class="button">Почати тренування</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    Математика • Аналітична геометрія • Коло
+  </div>
+</div>
+</body>
+</html>
